@@ -103,69 +103,65 @@ int main(int argc, char **argv)
             }
             break;
         case 'C' :
-            cgroups[index] = { 
-                & (struct cgroups_control) {
-                    .control = CGRP_CPU_CONTROL,
-                    .settings = (struct cgroup_setting *[]) {
-                        & (struct cgroup_setting) {
-                            .name = "cpu.shares",
-                            .value = optarg
-                        },
-                        &self_to_task,             // must be added to all the new controls added
-                        NULL                       // NULL at the end of the array
-                    }
+            cgroups[index] =
+            & (struct cgroups_control) {
+                .control = CGRP_CPU_CONTROL,
+                .settings = (struct cgroup_setting *[]) {
+                    & (struct cgroup_setting) {
+                        .name = "cpu.shares",
+                        .value = optarg
+                    },
+                    &self_to_task,             // must be added to all the new controls added
+                    NULL                       // NULL at the end of the array
                 }
             };
             index++;
             cgroups[index] = NULL;
             break;
         case 's' :
-            cgroups[index] = {   
-                & (struct cgroups_control) {
-                    .control = CGRP_CPU_SET_CONTROL,
-                    .settings = (struct cgroup_setting *[]) {
-                        & (struct cgroup_setting) {
-                            .name = "cpuset.cpus",
-                            .value = optarg
-                        },
-                        &self_to_task,             // must be added to all the new controls added
-                        NULL                       // NULL at the end of the array
-                    }
-                } 
+            cgroups[index] =  
+            & (struct cgroups_control) {
+                .control = CGRP_CPU_SET_CONTROL,
+                .settings = (struct cgroup_setting *[]) {
+                    & (struct cgroup_setting) {
+                        .name = "cpuset.cpus",
+                        .value = optarg
+                    },
+                    &self_to_task,             // must be added to all the new controls added
+                    NULL                       // NULL at the end of the array
+                }
             };     
             index++;
             cgroups[index] = NULL;
             break;
         case 'p' :
-            cgroups[index] = {
-                & (struct cgroups_control) {
-                    .control = CGRP_PIDS_CONTROL,
-                    .settings = (struct cgroup_setting *[]) {
-                        & (struct cgroup_setting) {
-                            .name = "pids.max",
-                            .value = optarg
-                        },
-                        &self_to_task,             // must be added to all the new controls added
-                        NULL                       // NULL at the end of the array
-                    }
-                }  
+            cgroups[index] =
+            & (struct cgroups_control) {
+                .control = CGRP_PIDS_CONTROL,
+                .settings = (struct cgroup_setting *[]) {
+                    & (struct cgroup_setting) {
+                        .name = "pids.max",
+                        .value = optarg
+                    },
+                    &self_to_task,             // must be added to all the new controls added
+                    NULL                       // NULL at the end of the array
+                }
             };
             index++;
             cgroups[index] = NULL;   
             break;
         case 'M' :
-            cgroups[index] = {
-                & (struct cgroups_control) {
-                    .control = CGRP_MEMORY_CONTROL,
-                    .settings = (struct cgroup_setting *[]) {
-                        & (struct cgroup_setting) {
-                            .name = "memory.limit_in_bytes",
-                            .value = optarg
-                        },
-                        &self_to_task,             // must be added to all the new controls added
-                        NULL                       // NULL at the end of the array
-                    }
-                }  
+            cgroups[index] =
+            & (struct cgroups_control) {
+                .control = CGRP_MEMORY_CONTROL,
+                .settings = (struct cgroup_setting *[]) {
+                    & (struct cgroup_setting) {
+                        .name = "memory.limit_in_bytes",
+                        .value = optarg
+                    },
+                    &self_to_task,             // must be added to all the new controls added
+                    NULL                       // NULL at the end of the array
+                }
             };
             index++;
             cgroups[index] = NULL;     
