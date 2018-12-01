@@ -44,7 +44,7 @@ struct cgroups_control *cgroups[6] = {
 		}
 	},
     NULL                           // NULL at the end of the array
-};
+}   ;
 
 /**
  *  ------------------------ TODO ------------------------
