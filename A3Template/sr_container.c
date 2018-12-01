@@ -79,13 +79,11 @@ int main(int argc, char **argv)
     bool found_cflag = false;
     int index = 1;
     int blkIOIndex = 1;
-    while ((option = getopt(argc, argv, "c:m:u:C:s:p:M:r:w:H:")))
-    {
-        if (found_cflag)
-            break;
+    while ((option = getopt(argc, argv, "c:m:u:C:s:p:M:r:w:H:"))){
+        if (found_cflag) break;
 
-        switch (option)
-        {
+        switch (option){
+
         case 'c':
             config.argc = argc - last_optind - 1;
             config.argv = &argv[argc - config.argc];
@@ -103,12 +101,12 @@ int main(int argc, char **argv)
             break;
         case 'C' :
             cgroups[index] =
-            & (struct cgroups_control) {
+            struct cgroups_control{
                 .control = CGRP_CPU_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
                         .name = "cpu.shares",
-                        .value = optarg
+                        .value = &optarg
                     },
                     &self_to_task,             // must be added to all the new controls added
                     NULL                       // NULL at the end of the array
@@ -119,12 +117,12 @@ int main(int argc, char **argv)
             break;
         case 's' :
             cgroups[index] =  
-            & (struct cgroups_control) {
+            struct cgroups_control{
                 .control = CGRP_CPU_SET_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
                         .name = "cpuset.cpus",
-                        .value = optarg
+                        .value = &optarg
                     },
                     &self_to_task,             // must be added to all the new controls added
                     NULL                       // NULL at the end of the array
@@ -135,12 +133,12 @@ int main(int argc, char **argv)
             break;
         case 'p' :
             cgroups[index] =
-            & (struct cgroups_control) {
+            struct cgroups_control{
                 .control = CGRP_PIDS_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
                         .name = "pids.max",
-                        .value = optarg
+                        .value = &optarg
                     },
                     &self_to_task,             // must be added to all the new controls added
                     NULL                       // NULL at the end of the array
@@ -151,12 +149,12 @@ int main(int argc, char **argv)
             break;
         case 'M' :
             cgroups[index] =
-            & (struct cgroups_control) {
+            struct cgroups_control{
                 .control = CGRP_MEMORY_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
                         .name = "memory.limit_in_bytes",
-                        .value = optarg
+                        .value = &optarg
                     },
                     &self_to_task,             // must be added to all the new controls added
                     NULL                       // NULL at the end of the array
@@ -167,9 +165,9 @@ int main(int argc, char **argv)
             break;
         case 'r' :
             cgroups[0]->settings[blkIOIndex] =
-            & (struct cgroup_setting) {
+            struct cgroup_setting{
                 .name = "blkio.throttle.read_bps_device",
-                .value = optarg
+                .value = &optarg
             };
             blkIOIndex++;
             cgroups[0]->settings[blkIOIndex] = &self_to_task;
@@ -177,9 +175,9 @@ int main(int argc, char **argv)
             break;
         case 'w' :
             cgroups[0]->settings[blkIOIndex] =
-            & (struct cgroup_setting) {
+            struct cgroup_setting{
                 .name = "blkio.throttle.write_bps_device",
-                .value = optarg
+                .value = &optarg
             };
             blkIOIndex++;
             cgroups[0]->settings[blkIOIndex] = &self_to_task;
@@ -251,6 +249,7 @@ int main(int argc, char **argv)
      * Nothing to write here, just caution to ensure the array is filled
      * ------------------------------------------------------
      **/
+
     if (setup_cgroup_controls(&config, cgroups))
     {
         clean_child_structures(&config, cgroups, NULL);
@@ -274,7 +273,8 @@ int main(int argc, char **argv)
 
     /**
      *  ------------------------------------------------------
-     **/ 
+     **/
+
     if (child_pid == -1)
     {
         fprintf(stderr, "####### > child creation failed! %m\n");
