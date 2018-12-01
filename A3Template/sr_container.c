@@ -276,6 +276,22 @@ int main(int argc, char **argv)
      **/
 
         // You code for clone() goes here
+	char *stack;
+	char *stackTop;
+	pid_t child_pid;
+
+	// prepare stack
+	stack = malloc(STACK_SIZE);
+	if (stack == NULL) {
+		fprintf(stderr, "Malloc failed on clone(): %s\n", strerror(errno));
+	}
+	stackTop = stack + STACK_SIZE;
+
+	// clone now by passing &config to child_function
+	child_pid = clone(child_function, stackTop, CLONE_NEWIPC | CLONE_NEWNET | CLONE_NEWNS | CLONE_NEWPID | CLONE_UTS | CLONE_NEWCGROUP | SIGCHLD, &config);
+
+
+
 
     /**
      *  ------------------------------------------------------
