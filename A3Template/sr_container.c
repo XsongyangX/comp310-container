@@ -95,8 +95,7 @@ int main(int argc, char **argv)
             config.mount_dir = optarg;
             break;
         case 'u':
-            if (sscanf(optarg, "%d", &config.uid) != 1)
-            {
+            if (sscanf(optarg, "%d", &config.uid) != 1){
                 fprintf(stderr, "UID not as expected: %s\n", optarg);
                 cleanup_stuff(argv, sockets);
                 return EXIT_FAILURE;
@@ -183,12 +182,8 @@ int main(int argc, char **argv)
                 .value = optarg
             };
             blkIOIndex++;
-            cgroups[0]->settings[blkIOIndex] = {
-                &self_to_task
-            } 
-            cgroups[0]->settings[blkIOIndex + 1] = {
-                NULL;
-            }
+            cgroups[0]->settings[blkIOIndex] = &self_to_task;
+            cgroups[0]->settings[blkIOIndex + 1] = NULL;
             break;
         case 'H' :
             config.hostname = optarg;
