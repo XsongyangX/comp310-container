@@ -43,11 +43,7 @@ struct cgroups_control *cgroups[6] = {
 			NULL                       // NULL at the end of the array
 		}
 	},
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-	NULL                               // NULL at the end of the array
+    NULL                           // NULL at the end of the array
 };
 
 /**
