@@ -32,6 +32,7 @@ struct cgroup_setting self_to_task = {
  **/ 
 
 struct cgroups_control *cgroups[6] = {
+
 	& (struct cgroups_control) {
 		.control = CGRP_BLKIO_CONTROL,
 		.settings = (struct cgroup_setting *[]) {
@@ -43,7 +44,8 @@ struct cgroups_control *cgroups[6] = {
 			NULL                       // NULL at the end of the array
 		}
 	},
-    NULL                           // NULL at the end of the array
+
+  NULL                           // NULL at the end of the array
 };
 
 /**
@@ -86,6 +88,7 @@ int main(int argc, char **argv)
 
         switch (option)
         {
+		// default flags
         case 'c':
             config.argc = argc - last_optind - 1;
             config.argv = &argv[argc - config.argc];
@@ -101,6 +104,7 @@ int main(int argc, char **argv)
                 return EXIT_FAILURE;
             }
             break;
+
         case 'C' :
             cgroups[index] =
             & (struct cgroups_control) {
@@ -188,6 +192,7 @@ int main(int argc, char **argv)
         case 'H' :
             config.hostname = optarg;
             break;
+
         default:
             cleanup_stuff(argv, sockets);
             return EXIT_FAILURE;
