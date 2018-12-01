@@ -102,10 +102,10 @@ int main(int argc, char **argv)
             break;
         case 'C' :
             & (struct cgroups_control) {
-                .control = CPU_CGRP_CPUSHAREWEIGHT_CONTROL,
+                .control = CGRP_CPU_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
-                        .name = "cpu.share.weight",
+                        .name = "cpu.shares",
                         .value = optarg
                     },
                     &self_to_task,             // must be added to all the new controls added
@@ -114,11 +114,11 @@ int main(int argc, char **argv)
             }
             break;
         case 's' :
-             & (struct cgroups_control) {
-                .control = CPUSET_CGRP_CORESRESTRICTION_CONTROL,
+            & (struct cgroups_control) {
+                .control = CGRP_CPU_SET_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
-                        .name = "cores.restriction",
+                        .name = "cpuset.cpus",
                         .value = optarg
                     },
                     &self_to_task,             // must be added to all the new controls added
@@ -127,8 +127,8 @@ int main(int argc, char **argv)
             }       
             break;
         case 'p' :
-               & (struct cgroups_control) {
-                .control = PID_CGRP_MAXPROCESSES_CONTROL,
+            & (struct cgroups_control) {
+                .control = CGRP_PIDS_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
                         .name = "max.processes",
@@ -140,11 +140,11 @@ int main(int argc, char **argv)
             }        
             break;
         case 'M' :
-              & (struct cgroups_control) {
-                .control = CPUSET_CGRP_CORESRESTRICTION_CONTROL,
+            & (struct cgroups_control) {
+                .control = CGRP_MEMORY_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
-                        .name = "cores.restriction",
+                        .name = "memory.limit_in_bytes",
                         .value = optarg
                     },
                     &self_to_task,             // must be added to all the new controls added
@@ -153,10 +153,30 @@ int main(int argc, char **argv)
             }         
             break;
         case 'r' :
-        
+            & (struct cgroups_control) {
+                .control = CGRP_BLKIO_CONTROL,
+                .settings = (struct cgroup_setting *[]) {
+                    & (struct cgroup_setting) {
+                        .name = "blkio.throttle.read_bps_device",
+                        .value = optarg
+                    },
+                    &self_to_task,             // must be added to all the new controls added
+                    NULL                       // NULL at the end of the array
+                }
+            }    
             break;
         case 'w' :
-        
+            & (struct cgroups_control) {
+                .control = CGRP_BLKIO_CONTROL,
+                .settings = (struct cgroup_setting *[]) {
+                    & (struct cgroup_setting) {
+                        .name = "blkio.throttle.write_bps_device",
+                        .value = optarg
+                    },
+                    &self_to_task,             // must be added to all the new controls added
+                    NULL                       // NULL at the end of the array
+                }
+            }         
             break;
         case 'H' :
         
