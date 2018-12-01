@@ -42,21 +42,7 @@ struct cgroups_control *cgroups[6] = {
 			NULL                       // NULL at the end of the array
 		}
 	},
-
-	& (struct cgroups_control) {
-		.control = CGRP_CPU_CONTROL,
-		.settings = (struct cgroup_setting *[]) {
-			
-			& (struct cgroup_setting) {
-
-				.name = "cpu.shares"
-				// .value is to be set later
-			},
-			&self_to_task,
-			NULL
-		}
-	},
-	NULL                               // NULL at the end of the array
+	NULL								// NULL at the end of the array
 };
 
 
@@ -90,13 +76,14 @@ int main(int argc, char **argv)
     pid_t child_pid = 0;
     int last_optind = 0;
     bool found_cflag = false;
-    while ((option = getopt(argc, argv, "c:m:u:")))
+    while ((option = getopt(argc, argv, "c:m:u:C:s:p:M:r:w:H:")))
     {
         if (found_cflag)
             break;
 
         switch (option)
         {
+		// default flags
         case 'c':
             config.argc = argc - last_optind - 1;
             config.argv = &argv[argc - config.argc];
@@ -113,6 +100,22 @@ int main(int argc, char **argv)
                 return EXIT_FAILURE;
             }
             break;
+
+		// optional flags
+		case 'C':
+
+		case 's':
+
+		case 'p':
+
+		case 'M':
+
+		case 'r':
+
+		case 'w':
+
+		case 'H':
+
         default:
             cleanup_stuff(argv, sockets);
             return EXIT_FAILURE;
