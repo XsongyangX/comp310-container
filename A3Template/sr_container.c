@@ -43,6 +43,10 @@ struct cgroups_control *cgroups[6] = {
 			NULL                       // NULL at the end of the array
 		}
 	},
+    NULL,
+    NULL,
+    NULL,
+    NULL,
 	NULL                               // NULL at the end of the array
 };
 
@@ -77,6 +81,7 @@ int main(int argc, char **argv)
     pid_t child_pid = 0;
     int last_optind = 0;
     bool found_cflag = false;
+    int index = 1;
     while ((option = getopt(argc, argv, "c:m:u:C:s:p:M:r:w:H:")))
     {
         if (found_cflag)
@@ -101,62 +106,76 @@ int main(int argc, char **argv)
             }
             break;
         case 'C' :
-            & (struct cgroups_control) {
-                .control = CGRP_CPU_CONTROL,
-                .settings = (struct cgroup_setting *[]) {
-                    & (struct cgroup_setting) {
-                        .name = "cpu.shares",
-                        .value = optarg
-                    },
-                    &self_to_task,             // must be added to all the new controls added
-                    NULL                       // NULL at the end of the array
+            cgroups[index] = { 
+                (struct cgroups_control) {
+                    .control = CGRP_CPU_CONTROL,
+                    .settings = (struct cgroup_setting *[]) {
+                        & (struct cgroup_setting) {
+                            .name = "cpu.shares",
+                            .value = optarg
+                        },
+                        &self_to_task,             // must be added to all the new controls added
+                        NULL                       // NULL at the end of the array
+                    }
                 }
             }
+            index++;
+            cgroups[index] = NULL;
             break;
         case 's' :
-            & (struct cgroups_control) {
-                .control = CGRP_CPU_SET_CONTROL,
-                .settings = (struct cgroup_setting *[]) {
-                    & (struct cgroup_setting) {
-                        .name = "cpuset.cpus",
-                        .value = optarg
-                    },
-                    &self_to_task,             // must be added to all the new controls added
-                    NULL                       // NULL at the end of the array
-                }
-            }       
+            cgroups[index] = {   
+                (struct cgroups_control) {
+                    .control = CGRP_CPU_SET_CONTROL,
+                    .settings = (struct cgroup_setting *[]) {
+                        & (struct cgroup_setting) {
+                            .name = "cpuset.cpus",
+                            .value = optarg
+                        },
+                        &self_to_task,             // must be added to all the new controls added
+                        NULL                       // NULL at the end of the array
+                    }
+                } 
+            }     
+            index++;
+            cgroups[index] = NULL;
             break;
         case 'p' :
-            & (struct cgroups_control) {
-                .control = CGRP_PIDS_CONTROL,
-                .settings = (struct cgroup_setting *[]) {
-                    & (struct cgroup_setting) {
-                        .name = "max.processes",
-                        .value = optarg
-                    },
-                    &self_to_task,             // must be added to all the new controls added
-                    NULL                       // NULL at the end of the array
-                }
-            }        
+            cgroups[index]{
+                (struct cgroups_control) {
+                    .control = CGRP_PIDS_CONTROL,
+                    .settings = (struct cgroup_setting *[]) {
+                        & (struct cgroup_setting) {
+                            .name = "",
+                            .value = optarg
+                        },
+                        &self_to_task,             // must be added to all the new controls added
+                        NULL                       // NULL at the end of the array
+                    }
+                }  
+            }  
+            index++;
+            cgroups[index] = NULL;   
             break;
         case 'M' :
-            & (struct cgroups_control) {
-                .control = CGRP_MEMORY_CONTROL,
-                .settings = (struct cgroup_setting *[]) {
-                    & (struct cgroup_setting) {
-                        .name = "memory.limit_in_bytes",
-                        .value = optarg
-                    },
-                    &self_to_task,             // must be added to all the new controls added
-                    NULL                       // NULL at the end of the array
-                }
-            }         
+            cgroups[index]{
+                (struct cgroups_control) {
+                    .control = CGRP_MEMORY_CONTROL,
+                    .settings = (struct cgroup_setting *[]) {
+                        & (struct cgroup_setting) {
+                            .name = "memory.limit_in_bytes",
+                            .value = optarg
+                        },
+                        &self_to_task,             // must be added to all the new controls added
+                        NULL                       // NULL at the end of the array
+                    }
+                }  
+            }  
+            index++;
+            cgroups[index] = NULL;     
             break;
         case 'r' :
-            & (struct cgroups_control) {
-                .control = CGRP_BLKIO_CONTROL,
-                .settings = (struct cgroup_setting *[]) {
-                    & (struct cgroup_setting) {
+            cgroups[0].settings = (struct cgroup_setting *[]) { //this block is also wrong
+                & (struct cgroup_setting) {
                         .name = "blkio.throttle.read_bps_device",
                         .value = optarg
                     },
@@ -166,9 +185,7 @@ int main(int argc, char **argv)
             }    
             break;
         case 'w' :
-            & (struct cgroups_control) {
-                .control = CGRP_BLKIO_CONTROL,
-                .settings = (struct cgroup_setting *[]) {
+            cgroups[0].settings = (struct cgroup_setting *[]) { //this block is wrong
                     & (struct cgroup_setting) {
                         .name = "blkio.throttle.write_bps_device",
                         .value = optarg
