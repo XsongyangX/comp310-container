@@ -16,6 +16,7 @@
  *  You must add this to all the controls you create so that it is added to the task list.
  *  See the example 'cgroups_control' added to the array of controls - 'cgroups' - below
  **/  
+
 struct cgroup_setting self_to_task = {
 	.name = "tasks",
 	.value = "0"
@@ -29,6 +30,7 @@ struct cgroup_setting self_to_task = {
  *      in the comments for the main() below
  *  ------------------------------------------------------
  **/ 
+
 struct cgroups_control *cgroups[6] = {
 
 	& (struct cgroups_control) {
@@ -42,9 +44,9 @@ struct cgroups_control *cgroups[6] = {
 			NULL                       // NULL at the end of the array
 		}
 	},
-	NULL								// NULL at the end of the array
-};
 
+  NULL                           // NULL at the end of the array
+};
 
 /**
  *  ------------------------ TODO ------------------------
@@ -68,6 +70,7 @@ struct cgroups_control *cgroups[6] = {
  *   For 7 you have to just set the hostname parameter of the 'child_config' struct in the header file
  *  ------------------------------------------------------
  **/
+
 int main(int argc, char **argv)
 {
     struct child_config config = {0};
@@ -76,6 +79,8 @@ int main(int argc, char **argv)
     pid_t child_pid = 0;
     int last_optind = 0;
     bool found_cflag = false;
+    int index = 1;
+    int blkIOIndex = 1;
     while ((option = getopt(argc, argv, "c:m:u:C:s:p:M:r:w:H:")))
     {
         if (found_cflag)
@@ -93,28 +98,100 @@ int main(int argc, char **argv)
             config.mount_dir = optarg;
             break;
         case 'u':
-            if (sscanf(optarg, "%d", &config.uid) != 1)
-            {
+            if (sscanf(optarg, "%d", &config.uid) != 1){
                 fprintf(stderr, "UID not as expected: %s\n", optarg);
                 cleanup_stuff(argv, sockets);
                 return EXIT_FAILURE;
             }
             break;
 
-		// optional flags
-		case 'C':
-
-		case 's':
-
-		case 'p':
-
-		case 'M':
-
-		case 'r':
-
-		case 'w':
-
-		case 'H':
+        case 'C' :
+            cgroups[index] =
+            & (struct cgroups_control) {
+                .control = CGRP_CPU_CONTROL,
+                .settings = (struct cgroup_setting *[]) {
+                    & (struct cgroup_setting) {
+                        .name = "cpu.shares",
+                        .value = optarg
+                    },
+                    &self_to_task,             // must be added to all the new controls added
+                    NULL                       // NULL at the end of the array
+                }
+            };
+            index++;
+            cgroups[index] = NULL;
+            break;
+        case 's' :
+            cgroups[index] =  
+            & (struct cgroups_control) {
+                .control = CGRP_CPU_SET_CONTROL,
+                .settings = (struct cgroup_setting *[]) {
+                    & (struct cgroup_setting) {
+                        .name = "cpuset.cpus",
+                        .value = optarg
+                    },
+                    &self_to_task,             // must be added to all the new controls added
+                    NULL                       // NULL at the end of the array
+                }
+            };     
+            index++;
+            cgroups[index] = NULL;
+            break;
+        case 'p' :
+            cgroups[index] =
+            & (struct cgroups_control) {
+                .control = CGRP_PIDS_CONTROL,
+                .settings = (struct cgroup_setting *[]) {
+                    & (struct cgroup_setting) {
+                        .name = "pids.max",
+                        .value = optarg
+                    },
+                    &self_to_task,             // must be added to all the new controls added
+                    NULL                       // NULL at the end of the array
+                }
+            };
+            index++;
+            cgroups[index] = NULL;   
+            break;
+        case 'M' :
+            cgroups[index] =
+            & (struct cgroups_control) {
+                .control = CGRP_MEMORY_CONTROL,
+                .settings = (struct cgroup_setting *[]) {
+                    & (struct cgroup_setting) {
+                        .name = "memory.limit_in_bytes",
+                        .value = optarg
+                    },
+                    &self_to_task,             // must be added to all the new controls added
+                    NULL                       // NULL at the end of the array
+                }
+            };
+            index++;
+            cgroups[index] = NULL;     
+            break;
+        case 'r' :
+            cgroups[0]->settings[blkIOIndex] =
+            & (struct cgroup_setting) {
+                .name = "blkio.throttle.read_bps_device",
+                .value = optarg
+            };
+            blkIOIndex++;
+            cgroups[0]->settings[blkIOIndex] = &self_to_task;
+            cgroups[0]->settings[blkIOIndex + 1] = NULL;
+            break;
+        case 'w' :
+            cgroups[0]->settings[blkIOIndex] =
+            & (struct cgroup_setting) {
+                .name = "blkio.throttle.write_bps_device",
+                .value = optarg
+            };
+            blkIOIndex++;
+            cgroups[0]->settings[blkIOIndex] = &self_to_task;
+            cgroups[0]->settings[blkIOIndex + 1] = NULL;
+            break;
+        case 'H' :
+            config.hostname = optarg;
+            break;
 
         default:
             cleanup_stuff(argv, sockets);
