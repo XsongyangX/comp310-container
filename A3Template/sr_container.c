@@ -29,7 +29,8 @@ struct cgroup_setting self_to_task = {
  *      in the comments for the main() below
  *  ------------------------------------------------------
  **/ 
-struct cgroups_control *cgroups[5] = {
+struct cgroups_control *cgroups[6] = {
+
 	& (struct cgroups_control) {
 		.control = CGRP_BLKIO_CONTROL,
 		.settings = (struct cgroup_setting *[]) {
@@ -39,6 +40,20 @@ struct cgroups_control *cgroups[5] = {
 			},
 			&self_to_task,             // must be added to all the new controls added
 			NULL                       // NULL at the end of the array
+		}
+	},
+
+	& (struct cgroups_control) {
+		.control = CGRP_CPU_CONTROL,
+		.settings = (struct cgroup_setting *[]) {
+			
+			& (struct cgroup_setting) {
+
+				.name = "cpu.shares"
+				// .value is to be set later
+			},
+			&self_to_task,
+			NULL
 		}
 	},
 	NULL                               // NULL at the end of the array
