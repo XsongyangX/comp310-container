@@ -142,7 +142,7 @@ int main(int argc, char **argv)
                     .control = CGRP_PIDS_CONTROL,
                     .settings = (struct cgroup_setting *[]) {
                         & (struct cgroup_setting) {
-                            .name = "",
+                            .name = "pids.max",
                             .value = optarg
                         },
                         &self_to_task,             // must be added to all the new controls added
