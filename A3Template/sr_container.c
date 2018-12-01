@@ -115,7 +115,7 @@ int main(int argc, char **argv)
                         NULL                       // NULL at the end of the array
                     }
                 }
-            }
+            };
             index++;
             cgroups[index] = NULL;
             break;
@@ -132,7 +132,7 @@ int main(int argc, char **argv)
                         NULL                       // NULL at the end of the array
                     }
                 } 
-            }     
+            };     
             index++;
             cgroups[index] = NULL;
             break;
@@ -149,7 +149,7 @@ int main(int argc, char **argv)
                         NULL                       // NULL at the end of the array
                     }
                 }  
-            }  
+            };
             index++;
             cgroups[index] = NULL;   
             break;
@@ -166,32 +166,26 @@ int main(int argc, char **argv)
                         NULL                       // NULL at the end of the array
                     }
                 }  
-            }  
+            };
             index++;
             cgroups[index] = NULL;     
             break;
         case 'r' :
-            cgroups[0]->settings[blkIOIndex] = {
-                & (struct cgroup_setting) {
-                    .name = "blkio.throttle.read_bps_device",
-                    .value = optarg
-                }
-            }
+            cgroups[0]->settings[blkIOIndex] =
+            & (struct cgroup_setting) {
+                .name = "blkio.throttle.read_bps_device",
+                .value = optarg
+            };
             blkIOIndex++;
-            cgroups[0]->settings[blkIOIndex] = {
-                &self_to_task
-            } 
-            cgroups[0]->settings[blkIOIndex + 1] = {
-                NULL;
-            }
+            cgroups[0]->settings[blkIOIndex] = &self_to_task;
+            cgroups[0]->settings[blkIOIndex + 1] = NULL;
             break;
         case 'w' :
-            cgroups[0]->settings[blkIOIndex] = {
-                & (struct cgroup_setting) {
-                    .name = "blkio.throttle.write_bps_device",
-                    .value = optarg
-                }
-            }
+            cgroups[0]->settings[blkIOIndex] =
+            & (struct cgroup_setting) {
+                .name = "blkio.throttle.write_bps_device",
+                .value = optarg
+            };
             blkIOIndex++;
             cgroups[0]->settings[blkIOIndex] = {
                 &self_to_task
@@ -201,7 +195,7 @@ int main(int argc, char **argv)
             }
             break;
         case 'H' :
-            //missing
+            config.hostname = optarg;
             break;
         default:
             cleanup_stuff(argv, sockets);
