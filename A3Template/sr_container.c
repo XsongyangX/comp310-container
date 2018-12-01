@@ -16,6 +16,7 @@
  *  You must add this to all the controls you create so that it is added to the task list.
  *  See the example 'cgroups_control' added to the array of controls - 'cgroups' - below
  **/  
+
 struct cgroup_setting self_to_task = {
 	.name = "tasks",
 	.value = "0"
@@ -29,7 +30,8 @@ struct cgroup_setting self_to_task = {
  *      in the comments for the main() below
  *  ------------------------------------------------------
  **/ 
-struct cgroups_control *cgroups[5] = {
+
+struct cgroups_control *cgroups[6] = {
 	& (struct cgroups_control) {
 		.control = CGRP_BLKIO_CONTROL,
 		.settings = (struct cgroup_setting *[]) {
@@ -43,7 +45,6 @@ struct cgroups_control *cgroups[5] = {
 	},
 	NULL                               // NULL at the end of the array
 };
-
 
 /**
  *  ------------------------ TODO ------------------------
@@ -67,6 +68,7 @@ struct cgroups_control *cgroups[5] = {
  *   For 7 you have to just set the hostname parameter of the 'child_config' struct in the header file
  *  ------------------------------------------------------
  **/
+
 int main(int argc, char **argv)
 {
     struct child_config config = {0};
@@ -75,7 +77,7 @@ int main(int argc, char **argv)
     pid_t child_pid = 0;
     int last_optind = 0;
     bool found_cflag = false;
-    while ((option = getopt(argc, argv, "c:m:u:")))
+    while ((option = getopt(argc, argv, "c:m:u:C:s:p:M:r:w:H:")))
     {
         if (found_cflag)
             break;
@@ -97,6 +99,67 @@ int main(int argc, char **argv)
                 cleanup_stuff(argv, sockets);
                 return EXIT_FAILURE;
             }
+            break;
+        case 'C' :
+            & (struct cgroups_control) {
+                .control = CPU_CGRP_CPUSHAREWEIGHT_CONTROL,
+                .settings = (struct cgroup_setting *[]) {
+                    & (struct cgroup_setting) {
+                        .name = "cpu.share.weight",
+                        .value = optarg
+                    },
+                    &self_to_task,             // must be added to all the new controls added
+                    NULL                       // NULL at the end of the array
+                }
+            }
+            break;
+        case 's' :
+             & (struct cgroups_control) {
+                .control = CPUSET_CGRP_CORESRESTRICTION_CONTROL,
+                .settings = (struct cgroup_setting *[]) {
+                    & (struct cgroup_setting) {
+                        .name = "cores.restriction",
+                        .value = optarg
+                    },
+                    &self_to_task,             // must be added to all the new controls added
+                    NULL                       // NULL at the end of the array
+                }
+            }       
+            break;
+        case 'p' :
+               & (struct cgroups_control) {
+                .control = PID_CGRP_MAXPROCESSES_CONTROL,
+                .settings = (struct cgroup_setting *[]) {
+                    & (struct cgroup_setting) {
+                        .name = "max.processes",
+                        .value = optarg
+                    },
+                    &self_to_task,             // must be added to all the new controls added
+                    NULL                       // NULL at the end of the array
+                }
+            }        
+            break;
+        case 'M' :
+              & (struct cgroups_control) {
+                .control = CPUSET_CGRP_CORESRESTRICTION_CONTROL,
+                .settings = (struct cgroup_setting *[]) {
+                    & (struct cgroup_setting) {
+                        .name = "cores.restriction",
+                        .value = optarg
+                    },
+                    &self_to_task,             // must be added to all the new controls added
+                    NULL                       // NULL at the end of the array
+                }
+            }         
+            break;
+        case 'r' :
+        
+            break;
+        case 'w' :
+        
+            break;
+        case 'H' :
+        
             break;
         default:
             cleanup_stuff(argv, sockets);
