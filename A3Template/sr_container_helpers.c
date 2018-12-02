@@ -18,7 +18,7 @@ int switch_child_root(const char *new_root, const char *put_old)
      *  ------------------------------------------------------
      * */ 
     //switch new_root with old_root
-    int pvRootErr = pivot_root(new_root, put_old);
+    int pvRootErr = syscall(SYS_pivot_root, new_root, put_old);
     if(pvRootErr == -1){
         //failure to switch roots
         fprintf(stderr, "The root did not change on pivot_root: %s\n", strerror(errno));
