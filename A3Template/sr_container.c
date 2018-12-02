@@ -124,7 +124,7 @@ int main(int argc, char **argv)
 
 			// fill in the optarg in .value
 			char *theValue = cpu_cgroup.settings[0]->value;
-			memset(theValue, '\0', sizeof(theValue));
+			memset(theValue, '\0', strlen(theValue));
 			strcpy(theValue, optarg);
 
 			// put the cgroup into the array
