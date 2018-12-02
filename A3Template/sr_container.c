@@ -32,6 +32,7 @@ struct cgroup_setting self_to_task = {
  **/ 
 
 struct cgroups_control *cgroups[6] = {
+
 	& (struct cgroups_control) {
 		.control = CGRP_BLKIO_CONTROL,
 		.settings = (struct cgroup_setting *[]) {
@@ -43,8 +44,14 @@ struct cgroups_control *cgroups[6] = {
 			NULL                       // NULL at the end of the array
 		}
 	},
+<<<<<<< HEAD
     NULL                           // NULL at the end of the array
 }   ;
+=======
+
+  NULL                           // NULL at the end of the array
+};
+>>>>>>> origin
 
 /**
  *  ------------------------ TODO ------------------------
@@ -82,8 +89,9 @@ int main(int argc, char **argv)
     while ((option = getopt(argc, argv, "c:m:u:C:s:p:M:r:w:H:"))){
         if (found_cflag) break;
 
-        switch (option){
-
+        switch (option)
+        {
+		// default supported flags
         case 'c':
             config.argc = argc - last_optind - 1;
             config.argv = &argv[argc - config.argc];
@@ -99,22 +107,38 @@ int main(int argc, char **argv)
                 return EXIT_FAILURE;
             }
             break;
+
+		// optional supported flags, added by us
         case 'C' :
-            cgroups[index] =
-            struct cgroups_control{
+
+			; // strange fix to the label problem
+
+			// declare cgroups element cpu_cgroup
+			struct cgroups_control cpu_cgroup = {
                 .control = CGRP_CPU_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
                         .name = "cpu.shares",
-                        .value = &optarg
                     },
                     &self_to_task,             // must be added to all the new controls added
                     NULL                       // NULL at the end of the array
                 }
             };
+
+			// fill in the optarg in .value
+			char *theValue = cpu_cgroup.settings[0]->value;
+			memset(theValue, '\0', strlen(theValue));
+			strcpy(theValue, optarg);
+
+			// put the cgroup into the array
+			cgroups[index] = &cpu_cgroup;
+
+			// append null at the end of cgroups
             index++;
             cgroups[index] = NULL;
             break;
+
+
         case 's' :
             cgroups[index] =  
             struct cgroups_control{
@@ -186,6 +210,7 @@ int main(int argc, char **argv)
         case 'H' :
             config.hostname = optarg;
             break;
+
         default:
             cleanup_stuff(argv, sockets);
             return EXIT_FAILURE;
@@ -270,6 +295,22 @@ int main(int argc, char **argv)
      **/
 
         // You code for clone() goes here
+	char *stack;
+	char *stackTop;
+	pid_t child_pid;
+
+	// prepare stack
+	stack = malloc(STACK_SIZE);
+	if (stack == NULL) {
+		fprintf(stderr, "Malloc failed on clone(): %s\n", strerror(errno));
+	}
+	stackTop = stack + STACK_SIZE;
+
+	// clone now by passing &config to child_function
+	child_pid = clone(child_function, stackTop, CLONE_NEWIPC | CLONE_NEWNET | CLONE_NEWNS | CLONE_NEWPID | CLONE_NEWUTS | CLONE_NEWCGROUP | SIGCHLD, &config);
+
+
+
 
     /**
      *  ------------------------------------------------------
