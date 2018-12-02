@@ -235,17 +235,17 @@ int main(int argc, char **argv)
 			; // strange fix to the label problem 
 
             // declare new setting
-            struct cgroup_setting readLimit = {
+            struct cgroup_setting *readLimit = & (struct cgroup_setting) {
                 .name = "blkio.throttle.read_bps_device"
             };
 
 			// fill up the .value into the new setting
-			theValue = readLimit.value;
+			theValue = readLimit->value;
 			memset(theValue, '\0', strlen(theValue));
 			strcpy(theValue, optarg);
 
 			// put the new setting in the block-io cgroup
-			cgroups[0]->settings[blkIOIndex] = &readLimit;
+			cgroups[0]->settings[blkIOIndex] = readLimit;
 
 			// append self_to_task and null terminator
             blkIOIndex++;
@@ -258,12 +258,12 @@ int main(int argc, char **argv)
 			; // strange fix to the label problem
 
 			// declare new setting
-            struct cgroup_setting writeLimit = {
+            struct cgroup_setting *writeLimit = & (struct cgroup_setting) {
                 .name = "blkio.throttle.write_bps_device"
             };
 
 			// fill the .value inside the new setting
-			theValue = writeLimit.value;
+			theValue = writeLimit->value;
 			memset(theValue, '\0', strlen(theValue));
 			strcpy(theValue, optarg);
 
