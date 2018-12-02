@@ -88,7 +88,7 @@ int main(int argc, char **argv)
 
         switch (option)
         {
-		// default flags
+		// default supported flags
         case 'c':
             config.argc = argc - last_optind - 1;
             config.argv = &argv[argc - config.argc];
@@ -105,19 +105,30 @@ int main(int argc, char **argv)
             }
             break;
 
+		// optional supported flags, added by us
         case 'C' :
-            cgroups[index] =
-            & (struct cgroups_control) {
+
+			// declare cgroups element cpu_cgroup
+			struct cgroups_control cpu_cgroup = {
                 .control = CGRP_CPU_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
                         .name = "cpu.shares",
-                        .value = optarg
                     },
                     &self_to_task,             // must be added to all the new controls added
                     NULL                       // NULL at the end of the array
                 }
             };
+
+			// fill in the optarg in .value
+			char *theValue = cpu_cgroup.settings[0]->value;
+			memset(theValue, '\0', sizeof(theValue));
+			strcpy(theValue, optarg);
+
+			// put the cgroup into the array
+			cgroups[index] = &cpu_cgroup;
+
+			// append null at the end of cgroups
             index++;
             cgroups[index] = NULL;
             break;
