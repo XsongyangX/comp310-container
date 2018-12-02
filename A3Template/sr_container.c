@@ -79,8 +79,12 @@ int main(int argc, char **argv)
     pid_t child_pid = 0;
     int last_optind = 0;
     bool found_cflag = false;
+
+	// our temp vars
     int index = 1;
     int blkIOIndex = 1;
+	char *theValue;
+
     while ((option = getopt(argc, argv, "c:m:u:C:s:p:M:r:w:H:")))
     {
         if (found_cflag)
@@ -123,7 +127,7 @@ int main(int argc, char **argv)
             };
 
 			// fill in the optarg in .value
-			char *theValue = cpu_cgroup.settings[0]->value;
+			theValue = cpu_cgroup.settings[0]->value;
 			memset(theValue, '\0', strlen(theValue));
 			strcpy(theValue, optarg);
 
@@ -153,7 +157,7 @@ int main(int argc, char **argv)
             };
 
 			// fill in the optart in .value
-			char *theValue = cpuset_cgroup.settings[0]->value;
+			theValue = cpuset_cgroup.settings[0]->value;
 			memset(theValue, '\0', strlen(theValue));
 			strcpy(theValue, optarg);
 
@@ -183,7 +187,7 @@ int main(int argc, char **argv)
             };
 
 			// fill in the optart in .value
-			char *theValue = pids_cgroup.settings[0]->value;
+			theValue = pids_cgroup.settings[0]->value;
 			memset(theValue, '\0', strlen(theValue));
 			strcpy(theValue, optarg);
 
@@ -213,7 +217,7 @@ int main(int argc, char **argv)
             };
 
 			// fill in the optarg in .value
-			char *theValue = mem_cgroup.settings[0]->value;
+			theValue = mem_cgroup.settings[0]->value;
 			memset(theValue, '\0', strlen(theValue));
 			strcpy(theValue, optarg);
 
