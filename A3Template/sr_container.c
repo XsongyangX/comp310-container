@@ -107,6 +107,8 @@ int main(int argc, char **argv)
 
 		// optional supported flags, added by us
         case 'C' :
+			
+			; // strange fix to the label problem
 
 			// declare cgroups element cpu_cgroup
 			struct cgroups_control cpu_cgroup = {
@@ -132,6 +134,8 @@ int main(int argc, char **argv)
             index++;
             cgroups[index] = NULL;
             break;
+
+
         case 's' :
             cgroups[index] =  
             & (struct cgroups_control) {
