@@ -21,7 +21,7 @@ int switch_child_root(const char *new_root, const char *put_old)
     int pvRootErr = pivot_root(new_root, put_old);
     if(pvRootErr == -1){
         //failure to switch roots
-        fprintf(stderr, "The root did not change.");
+        fprintf(stderr, "The root did not change on pivot_root: %s\n", strerror(errno));
         return -1;
     }
     return 0;
