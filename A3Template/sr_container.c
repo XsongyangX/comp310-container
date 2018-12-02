@@ -119,7 +119,7 @@ int main(int argc, char **argv)
                 .control = CGRP_CPU_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
-                        .name = "cpu.shares",
+                        .name = "cpu.shares"
                     },
                     &self_to_task,             // must be added to all the new controls added
                     NULL                       // NULL at the end of the array
@@ -149,7 +149,7 @@ int main(int argc, char **argv)
                 .control = CGRP_CPU_SET_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
-                        .name = "cpuset.cpus",
+                        .name = "cpuset.cpus"
                     },
                     &self_to_task,             // must be added to all the new controls added
                     NULL                       // NULL at the end of the array
@@ -179,7 +179,7 @@ int main(int argc, char **argv)
                 .control = CGRP_PIDS_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
-                        .name = "pids.max",
+                        .name = "pids.max"
                     },
                     &self_to_task,             // must be added to all the new controls added
                     NULL                       // NULL at the end of the array
@@ -209,7 +209,7 @@ int main(int argc, char **argv)
                 .control = CGRP_MEMORY_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
-                        .name = "memory.limit_in_bytes",
+                        .name = "memory.limit_in_bytes"
                     },
                     &self_to_task,             // must be added to all the new controls added
                     NULL                       // NULL at the end of the array
@@ -232,24 +232,45 @@ int main(int argc, char **argv)
 
         case 'r' :
 
-			; // strange fix the label problem 
+			; // strange fix to the label problem 
 
-            cgroups[0]->settings[blkIOIndex] =
-            & (struct cgroup_setting) {
-                .name = "blkio.throttle.read_bps_device",
-                .value = optarg
+            // declare new setting
+            struct cgroup_setting readLimit = {
+                .name = "blkio.throttle.read_bps_device"
             };
+
+			// fill up the .value into the new setting
+			theValue = readLimit.value;
+			memset(theValue, '\0', strlen(theValue));
+			strcpy(theValue, optarg);
+
+			// put the new setting in the block-io cgroup
+			cgroups[0]->settings[blkIOIndex] = &readLimit;
+
+			// append self_to_task and null terminator
             blkIOIndex++;
             cgroups[0]->settings[blkIOIndex] = &self_to_task;
             cgroups[0]->settings[blkIOIndex + 1] = NULL;
             break;
         
 		case 'w' :
-            cgroups[0]->settings[blkIOIndex] =
-            & (struct cgroup_setting) {
-                .name = "blkio.throttle.write_bps_device",
-                .value = optarg
+
+			; // strange fix to the label problem
+
+			// declare new setting
+            struct cgroup_setting writeLimit = {
+                .name = "blkio.throttle.write_bps_device"
             };
+
+			// fill the .value inside the new setting
+			theValue = writeLimit.value;
+			memset(theValue, '\0', strlen(theValue));
+			strcpy(theValue, optarg);
+
+			// put the new setting into cgroups array
+			cgroups[0]->settings[blkIOIndex] = &writeLimit;
+
+			// append self_to_task and null terminator
             blkIOIndex++;
             cgroups[0]->settings[blkIOIndex] = &self_to_task;
             cgroups[0]->settings[blkIOIndex + 1] = NULL;
