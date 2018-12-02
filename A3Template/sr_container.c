@@ -44,14 +44,9 @@ struct cgroups_control *cgroups[6] = {
 			NULL                       // NULL at the end of the array
 		}
 	},
-<<<<<<< HEAD
-    NULL                           // NULL at the end of the array
-}   ;
-=======
 
   NULL                           // NULL at the end of the array
 };
->>>>>>> origin
 
 /**
  *  ------------------------ TODO ------------------------
