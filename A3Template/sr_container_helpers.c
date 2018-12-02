@@ -277,7 +277,7 @@ int setup_child_uid_map(pid_t child_pid, int fd)
     int has_userns = -1;
     if (read(fd, &has_userns, sizeof(has_userns)) != sizeof(has_userns))
     {
-        fprintf(stderr, "read() attempt from child failed!\n");
+        fprintf(stderr, "read() attempt from child failed! %m \n");
         return -1;
     }
     if (has_userns)
