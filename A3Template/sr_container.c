@@ -111,7 +111,7 @@ int main(int argc, char **argv)
 
 		// optional supported flags, added by us
         case 'C' :
-			
+
 			; // strange fix to the label problem
 
 			// declare cgroups element cpu_cgroup
@@ -343,6 +343,7 @@ int main(int argc, char **argv)
      * Nothing to write here, just caution to ensure the array is filled
      * ------------------------------------------------------
      **/
+
     if (setup_cgroup_controls(&config, cgroups))
     {
         clean_child_structures(&config, cgroups, NULL);
@@ -381,7 +382,8 @@ int main(int argc, char **argv)
 
     /**
      *  ------------------------------------------------------
-     **/ 
+     **/
+
     if (child_pid == -1)
     {
         fprintf(stderr, "####### > child creation failed! %m\n");
