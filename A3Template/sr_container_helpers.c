@@ -167,7 +167,7 @@ int setup_child_mounts(struct child_config *config)
     }
     
     if (mount(NULL, "/proc", "proc", 0, NULL)) {
-		fprintf(stderr, "attempt to mount proc failed!\n");
+		fprintf(stderr, "attempt to mount proc failed! Reason for failure: %s\n", strerror(errno));
 		return -1;
 	}
     fprintf(stderr, "successfully setup child mounts.\n");
