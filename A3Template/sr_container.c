@@ -288,7 +288,7 @@ int main(int argc, char **argv)
 	stackTop = stack + STACK_SIZE;
 
 	// clone now by passing &config to child_function
-	child_pid = clone(child_function, stackTop, CLONE_NEWIPC | CLONE_NEWNET | CLONE_NEWNS | CLONE_NEWPID | CLONE_UTS | CLONE_NEWCGROUP | SIGCHLD, &config);
+	child_pid = clone(child_function, stackTop, CLONE_NEWIPC | CLONE_NEWNET | CLONE_NEWNS | CLONE_NEWPID | CLONE_NEWUTS | CLONE_NEWCGROUP | SIGCHLD, &config);
 
 
 
