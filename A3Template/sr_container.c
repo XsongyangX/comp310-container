@@ -137,54 +137,99 @@ int main(int argc, char **argv)
 
 
         case 's' :
-            cgroups[index] =  
-            & (struct cgroups_control) {
+
+			; // strange fix to the case label problem
+
+			// declare the cgroups element cpuset_cgroup
+            struct cgroups_control cpuset_cgroup = {
                 .control = CGRP_CPU_SET_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
                         .name = "cpuset.cpus",
-                        .value = optarg
                     },
                     &self_to_task,             // must be added to all the new controls added
                     NULL                       // NULL at the end of the array
                 }
-            };     
+            };
+
+			// fill in the optart in .value
+			char *theValue = cpuset_cgroup.settings[0]->value;
+			memset(theValue, '\0', strlen(theValue));
+			strcpy(theValue, optarg);
+
+			// put the cgroup into the array
+			cgroups[index] = &cpuset_cgroup;
+
+			// append null at the end of cgroups
             index++;
             cgroups[index] = NULL;
             break;
+
+
         case 'p' :
-            cgroups[index] =
-            & (struct cgroups_control) {
+
+			; // strange fix to the case label and declaration problem
+
+			// declare the cgroups element pids_cgroup
+            struct cgroups_control pids_cgroup = {
                 .control = CGRP_PIDS_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
                         .name = "pids.max",
-                        .value = optarg
                     },
                     &self_to_task,             // must be added to all the new controls added
                     NULL                       // NULL at the end of the array
                 }
             };
+
+			// fill in the optart in .value
+			char *theValue = pids_cgroup.settings[0]->value;
+			memset(theValue, '\0', strlen(theValue));
+			strcpy(theValue, optarg);
+
+			// put the cgroup into the array
+			cgroups[index] = &pids_cgroup;
+
+			// append null at the end of cgroups
             index++;
             cgroups[index] = NULL;   
             break;
+
+
         case 'M' :
-            cgroups[index] =
-            & (struct cgroups_control) {
+
+			; // strange fix to the label problem
+
+			// declare the cgroups element mem_cgroup
+            struct cgroups_control mem_cgroup = {
                 .control = CGRP_MEMORY_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
                         .name = "memory.limit_in_bytes",
-                        .value = optarg
                     },
                     &self_to_task,             // must be added to all the new controls added
                     NULL                       // NULL at the end of the array
                 }
             };
+
+			// fill in the optarg in .value
+			char *theValue = mem_cgroup.settings[0]->value;
+			memset(theValue, '\0', strlen(theValue));
+			strcpy(theValue, optarg);
+
+			// put the cgroup into the array
+			cgroups[index] = &mem_cgroup;
+
+			// append null at the end of cgroups
             index++;
             cgroups[index] = NULL;     
             break;
+
+
         case 'r' :
+
+			; // strange fix the label problem 
+
             cgroups[0]->settings[blkIOIndex] =
             & (struct cgroup_setting) {
                 .name = "blkio.throttle.read_bps_device",
@@ -194,7 +239,8 @@ int main(int argc, char **argv)
             cgroups[0]->settings[blkIOIndex] = &self_to_task;
             cgroups[0]->settings[blkIOIndex + 1] = NULL;
             break;
-        case 'w' :
+        
+		case 'w' :
             cgroups[0]->settings[blkIOIndex] =
             & (struct cgroup_setting) {
                 .name = "blkio.throttle.write_bps_device",
@@ -204,7 +250,8 @@ int main(int argc, char **argv)
             cgroups[0]->settings[blkIOIndex] = &self_to_task;
             cgroups[0]->settings[blkIOIndex + 1] = NULL;
             break;
-        case 'H' :
+        
+		case 'H' :
             config.hostname = optarg;
             break;
 
