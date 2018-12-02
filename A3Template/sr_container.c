@@ -79,8 +79,12 @@ int main(int argc, char **argv)
     pid_t child_pid = 0;
     int last_optind = 0;
     bool found_cflag = false;
+
+	// our temp vars
     int index = 1;
     int blkIOIndex = 1;
+	char *theValue;
+
     while ((option = getopt(argc, argv, "c:m:u:C:s:p:M:r:w:H:")))
     {
         if (found_cflag)
@@ -115,7 +119,7 @@ int main(int argc, char **argv)
                 .control = CGRP_CPU_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
-                        .name = "cpu.shares",
+                        .name = "cpu.shares"
                     },
                     &self_to_task,             // must be added to all the new controls added
                     NULL                       // NULL at the end of the array
@@ -123,7 +127,7 @@ int main(int argc, char **argv)
             };
 
 			// fill in the optarg in .value
-			char *theValue = cpu_cgroup.settings[0]->value;
+			theValue = cpu_cgroup.settings[0]->value;
 			memset(theValue, '\0', strlen(theValue));
 			strcpy(theValue, optarg);
 
@@ -137,74 +141,142 @@ int main(int argc, char **argv)
 
 
         case 's' :
-            cgroups[index] =  
-            & (struct cgroups_control) {
+
+			; // strange fix to the case label problem
+
+			// declare the cgroups element cpuset_cgroup
+            struct cgroups_control cpuset_cgroup = {
                 .control = CGRP_CPU_SET_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
-                        .name = "cpuset.cpus",
-                        .value = optarg
+                        .name = "cpuset.cpus"
                     },
                     &self_to_task,             // must be added to all the new controls added
                     NULL                       // NULL at the end of the array
                 }
-            };     
+            };
+
+			// fill in the optart in .value
+			theValue = cpuset_cgroup.settings[0]->value;
+			memset(theValue, '\0', strlen(theValue));
+			strcpy(theValue, optarg);
+
+			// put the cgroup into the array
+			cgroups[index] = &cpuset_cgroup;
+
+			// append null at the end of cgroups
             index++;
             cgroups[index] = NULL;
             break;
+
+
         case 'p' :
-            cgroups[index] =
-            & (struct cgroups_control) {
+
+			; // strange fix to the case label and declaration problem
+
+			// declare the cgroups element pids_cgroup
+            struct cgroups_control pids_cgroup = {
                 .control = CGRP_PIDS_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
-                        .name = "pids.max",
-                        .value = optarg
+                        .name = "pids.max"
                     },
                     &self_to_task,             // must be added to all the new controls added
                     NULL                       // NULL at the end of the array
                 }
             };
+
+			// fill in the optart in .value
+			theValue = pids_cgroup.settings[0]->value;
+			memset(theValue, '\0', strlen(theValue));
+			strcpy(theValue, optarg);
+
+			// put the cgroup into the array
+			cgroups[index] = &pids_cgroup;
+
+			// append null at the end of cgroups
             index++;
             cgroups[index] = NULL;   
             break;
+
+
         case 'M' :
-            cgroups[index] =
-            & (struct cgroups_control) {
+
+			; // strange fix to the label problem
+
+			// declare the cgroups element mem_cgroup
+            struct cgroups_control mem_cgroup = {
                 .control = CGRP_MEMORY_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
-                        .name = "memory.limit_in_bytes",
-                        .value = optarg
+                        .name = "memory.limit_in_bytes"
                     },
                     &self_to_task,             // must be added to all the new controls added
                     NULL                       // NULL at the end of the array
                 }
             };
+
+			// fill in the optarg in .value
+			theValue = mem_cgroup.settings[0]->value;
+			memset(theValue, '\0', strlen(theValue));
+			strcpy(theValue, optarg);
+
+			// put the cgroup into the array
+			cgroups[index] = &mem_cgroup;
+
+			// append null at the end of cgroups
             index++;
             cgroups[index] = NULL;     
             break;
+
+
         case 'r' :
-            cgroups[0]->settings[blkIOIndex] =
-            & (struct cgroup_setting) {
-                .name = "blkio.throttle.read_bps_device",
-                .value = optarg
+
+			; // strange fix to the label problem 
+
+            // declare new setting
+            struct cgroup_setting readLimit = {
+                .name = "blkio.throttle.read_bps_device"
             };
+
+			// fill up the .value into the new setting
+			theValue = readLimit.value;
+			memset(theValue, '\0', strlen(theValue));
+			strcpy(theValue, optarg);
+
+			// put the new setting in the block-io cgroup
+			cgroups[0]->settings[blkIOIndex] = &readLimit;
+
+			// append self_to_task and null terminator
             blkIOIndex++;
             cgroups[0]->settings[blkIOIndex] = &self_to_task;
             cgroups[0]->settings[blkIOIndex + 1] = NULL;
             break;
-        case 'w' :
-            cgroups[0]->settings[blkIOIndex] =
-            & (struct cgroup_setting) {
-                .name = "blkio.throttle.write_bps_device",
-                .value = optarg
+        
+		case 'w' :
+
+			; // strange fix to the label problem
+
+			// declare new setting
+            struct cgroup_setting writeLimit = {
+                .name = "blkio.throttle.write_bps_device"
             };
+
+			// fill the .value inside the new setting
+			theValue = writeLimit.value;
+			memset(theValue, '\0', strlen(theValue));
+			strcpy(theValue, optarg);
+
+			// put the new setting into cgroups array
+			cgroups[0]->settings[blkIOIndex] = &writeLimit;
+
+			// append self_to_task and null terminator
             blkIOIndex++;
             cgroups[0]->settings[blkIOIndex] = &self_to_task;
             cgroups[0]->settings[blkIOIndex + 1] = NULL;
             break;
-        case 'H' :
+        
+		case 'H' :
             config.hostname = optarg;
             break;
 
@@ -293,7 +365,6 @@ int main(int argc, char **argv)
         // You code for clone() goes here
 	char *stack;
 	char *stackTop;
-	pid_t child_pid;
 
 	// prepare stack
 	stack = malloc(STACK_SIZE);
