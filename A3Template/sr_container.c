@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 			; // strange fix to the label problem
 
 			// declare cgroups element cpu_cgroup
-			struct cgroups_control cpu_cgroup = {
+			static struct cgroups_control cpu_cgroup = {
                 .control = CGRP_CPU_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
@@ -129,7 +129,7 @@ int main(int argc, char **argv)
 			// fill in the optarg in .value
 			theValue = cpu_cgroup.settings[0]->value;
 			memset(theValue, '\0', strlen(theValue));
-			strcpy(theValue, optarg);
+			strcpy(cpu_cgroup.settings[0]->value, optarg);
 
 			// put the cgroup into the array
 			cgroups[index] = &cpu_cgroup;
