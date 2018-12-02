@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 			; // strange fix to the label problem
 
 			// declare cgroups element cpu_cgroup
-			struct cgroups_control cpu_cgroup = {
+			struct cgroups_control *cpu_cgroup = & (struct cgroups_control){
                 .control = CGRP_CPU_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
@@ -127,12 +127,12 @@ int main(int argc, char **argv)
             };
 
 			// fill in the optarg in .value
-			theValue = cpu_cgroup.settings[0]->value;
+			theValue = cpu_cgroup->settings[0]->value;
 			memset(theValue, '\0', strlen(theValue));
 			strcpy(theValue, optarg);
 
 			// put the cgroup into the array
-			cgroups[index] = &cpu_cgroup;
+			cgroups[index] = cpu_cgroup;
 
 			// append null at the end of cgroups
             index++;
@@ -145,7 +145,7 @@ int main(int argc, char **argv)
 			; // strange fix to the case label problem
 
 			// declare the cgroups element cpuset_cgroup
-            struct cgroups_control cpuset_cgroup = {
+            struct cgroups_control *cpuset_cgroup = & (struct cgroups_control){
                 .control = CGRP_CPU_SET_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
@@ -157,12 +157,12 @@ int main(int argc, char **argv)
             };
 
 			// fill in the optart in .value
-			theValue = cpuset_cgroup.settings[0]->value;
+			theValue = cpuset_cgroup->settings[0]->value;
 			memset(theValue, '\0', strlen(theValue));
 			strcpy(theValue, optarg);
 
 			// put the cgroup into the array
-			cgroups[index] = &cpuset_cgroup;
+			cgroups[index] = cpuset_cgroup;
 
 			// append null at the end of cgroups
             index++;
@@ -175,7 +175,7 @@ int main(int argc, char **argv)
 			; // strange fix to the case label and declaration problem
 
 			// declare the cgroups element pids_cgroup
-            struct cgroups_control pids_cgroup = {
+            struct cgroups_control *pids_cgroup = & (struct cgroups_control){
                 .control = CGRP_PIDS_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
@@ -187,12 +187,12 @@ int main(int argc, char **argv)
             };
 
 			// fill in the optart in .value
-			theValue = pids_cgroup.settings[0]->value;
+			theValue = pids_cgroup->settings[0]->value;
 			memset(theValue, '\0', strlen(theValue));
 			strcpy(theValue, optarg);
 
 			// put the cgroup into the array
-			cgroups[index] = &pids_cgroup;
+			cgroups[index] = pids_cgroup;
 
 			// append null at the end of cgroups
             index++;
@@ -205,7 +205,7 @@ int main(int argc, char **argv)
 			; // strange fix to the label problem
 
 			// declare the cgroups element mem_cgroup
-            struct cgroups_control mem_cgroup = {
+            struct cgroups_control *mem_cgroup = & (struct cgroups_control){
                 .control = CGRP_MEMORY_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
@@ -217,12 +217,12 @@ int main(int argc, char **argv)
             };
 
 			// fill in the optarg in .value
-			theValue = mem_cgroup.settings[0]->value;
+			theValue = mem_cgroup->settings[0]->value;
 			memset(theValue, '\0', strlen(theValue));
 			strcpy(theValue, optarg);
 
 			// put the cgroup into the array
-			cgroups[index] = &mem_cgroup;
+			cgroups[index] = mem_cgroup;
 
 			// append null at the end of cgroups
             index++;
