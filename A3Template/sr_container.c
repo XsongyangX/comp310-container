@@ -268,7 +268,7 @@ int main(int argc, char **argv)
 			strcpy(theValue, optarg);
 
 			// put the new setting into cgroups array
-			cgroups[0]->settings[blkIOIndex] = &writeLimit;
+			cgroups[0]->settings[blkIOIndex] = writeLimit;
 
 			// append self_to_task and null terminator
             blkIOIndex++;
