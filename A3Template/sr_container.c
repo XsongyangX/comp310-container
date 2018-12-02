@@ -365,7 +365,6 @@ int main(int argc, char **argv)
         // You code for clone() goes here
 	char *stack;
 	char *stackTop;
-	pid_t child_pid;
 
 	// prepare stack
 	stack = malloc(STACK_SIZE);
