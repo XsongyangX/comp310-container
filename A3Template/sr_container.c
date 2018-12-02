@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 			; // strange fix to the label problem
 
 			// declare cgroups element cpu_cgroup
-			static struct cgroups_control cpu_cgroup = {
+			struct cgroups_control cpu_cgroup = {
                 .control = CGRP_CPU_CONTROL,
                 .settings = (struct cgroup_setting *[]) {
                     & (struct cgroup_setting) {
