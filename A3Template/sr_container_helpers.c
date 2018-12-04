@@ -162,6 +162,8 @@ int setup_syscall_filters(){
         fprintf(stderr, "seccomp could not load the new context: %m\n");
         return EXIT_FAILURE;
     }
+
+    return 0;
 }
 
 int setup_child_mounts(struct child_config *config)
