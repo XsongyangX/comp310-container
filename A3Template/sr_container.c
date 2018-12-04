@@ -151,6 +151,10 @@ int main(int argc, char **argv)
                     & (struct cgroup_setting) {
                         .name = "cpuset.cpus"
                     },
+					& (struct cgroup_setting) {
+						.name = "cpuset.mems",
+						.value = "0-1"
+					},
                     &self_to_task,             // must be added to all the new controls added
                     NULL                       // NULL at the end of the array
                 }
