@@ -50,6 +50,7 @@ int setup_child_capabilities()
     CAP_DAC_READ_SEARCH, CAP_FSETID, CAP_IPC_LOCK, CAP_MAC_ADMIN, CAP_MAC_OVERRIDE, CAP_MKNOD,
     CAP_SETFCAP, CAP_SYSLOG, CAP_SYS_ADMIN, CAP_SYS_BOOT, CAP_SYS_MODULE, CAP_SYS_NICE,
     CAP_SYS_RAWIO, CAP_SYS_RESOURCE, CAP_SYS_TIME, CAP_WAKE_ALARM};
+
     size_t num_caps_to_drop = 20;
     
     for(size_t i = 0; i<num_caps_to_drop; i++){
@@ -103,9 +104,64 @@ int setup_child_capabilities()
  *      Complete this method as described in the assingment handout to restrict a list of system calls
  * ------------------------------------------------------
  **/ 
-int setup_syscall_filters()
-{
-    return 0;
+int setup_syscall_filters(){
+
+    scmp_filter_ctx seccomp_ctx = seccomp_init(SCMP_ACT_ALLOW);     
+    if (!seccomp_ctx) {
+        fprintf(stderr, "seccomp initialization failed: %m\n");
+        return EXIT_FAILURE;
+    }
+
+    int filter_set_status = seccomp_rule_add(
+                                                seccomp_ctx,            // the context to which the rule applies
+                                                SCMP_FAIL,          // action to take on rule match
+                                                SCMP_SYS(move_pages),   // get the sys_call number using SCMP_SYS() macro
+                                                0                       // any additional argument matches
+                                            );
+    if (filter_set_status) {
+        if (seccomp_ctx)
+            seccomp_release(seccomp_ctx);
+        fprintf(stderr, "seccomp could not add KILL rule for 'move_pages': %m\n");
+        return EXIT_FAILURE;
+    }
+
+    filter_set_status = seccomp_rule_add(seccomp_ctx, SCMP_FAIL, SCMP_SYS(ptrace), 0);
+    if (filter_set_status) {
+        if (seccomp_ctx)
+            seccomp_release(seccomp_ctx);
+        fprintf(stderr, "seccomp could not add KILL rule for 'ptrace': %m\n");
+        return EXIT_FAILURE;
+    }
+
+    filter_set_status = seccomp_rule_add(
+                                        seccomp_ctx,                    // the context to which the rule applies
+                                        SCMP_FAIL,                  // action to take on rule match
+                                        SCMP_SYS(unshare),              // get the sys_call number using SCMP_SYS() macro
+                                        1,                              // any additional argument matches
+                                        SCMP_A0(SCMP_CMP_MASKED_EQ, CLONE_NEWUSER, CLONE_NEWUSER)
+                                        );
+    if (filter_set_status) {
+        if (seccomp_ctx)
+            seccomp_release(seccomp_ctx);
+        fprintf(stderr, "seccomp could not add KILL rule for 'unshare': %m\n");
+        return EXIT_FAILURE;
+    }
+
+    filter_set_status = seccomp_attr_set(seccomp_ctx, SCMP_FLTATR_CTL_NNP, 0);
+    if (filter_set_status) {
+        if (seccomp_ctx)
+            seccomp_release(seccomp_ctx);
+        fprintf(stderr, "seccomp could not set attribute 'SCMP_FLTATR_CTL_NNP': %m\n");
+        return EXIT_FAILURE;
+    }
+
+    filter_set_status = seccomp_load(seccomp_ctx);
+    if (filter_set_status) {
+        if (seccomp_ctx)
+            seccomp_release(seccomp_ctx);               // release from current process memory.
+        fprintf(stderr, "seccomp could not load the new context: %m\n");
+        return EXIT_FAILURE;
+    }
 }
 
 int setup_child_mounts(struct child_config *config)
