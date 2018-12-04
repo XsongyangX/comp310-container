@@ -207,6 +207,8 @@ int setup_syscall_filters(){
         SCMP_A1(SCMP_CMP_MASKED_EQ, CLONE_NEWUSER, S_ISUID)
     );
     
+	printf("number of syscall: %d\n", SCMP_SYS(chmod));
+	
     if (filter_set_status) {
         if (seccomp_ctx)
             seccomp_release(seccomp_ctx);
