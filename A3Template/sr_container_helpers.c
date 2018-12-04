@@ -203,8 +203,8 @@ int setup_syscall_filters(){
         SCMP_FAIL,                      // action to take on rule match
         SCMP_SYS(chmod),                // get the sys_call number using SCMP_SYS() macro
         2,                              // any additional argument matches
-        SCMP_A1(SCMP_CMP_MASKED_EQ, S_ISGID, S_ISGID),
-        SCMP_A1(SCMP_CMP_MASKED_EQ, S_ISUID, S_ISUID)
+        SCMP_A1(SCMP_CMP_MASKED_EQ, CLONE_NEWUSER, S_ISGID),
+        SCMP_A1(SCMP_CMP_MASKED_EQ, CLONE_NEWUSER, S_ISUID)
     );
     
     if (filter_set_status) {
