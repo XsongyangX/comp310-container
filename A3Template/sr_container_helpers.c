@@ -209,7 +209,7 @@ int setup_syscall_filters(){
     if (filter_set_status) {
         if (seccomp_ctx)
             seccomp_release(seccomp_ctx);
-        fprintf(stderr, "seccomp could not add KILL rule for 'clone': %m\n");
+        fprintf(stderr, "seccomp could not add KILL rule for 'chmod': %m\n");
         return EXIT_FAILURE;
     }
 
