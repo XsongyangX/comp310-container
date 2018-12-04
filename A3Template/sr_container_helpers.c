@@ -113,6 +113,19 @@ int setup_syscall_filters(){
     }
 
     int filter_set_status = seccomp_rule_add(
+                                                seccomp_ctx,
+                                                SCMP_FAIL,
+                                                SCMP_SYS(ptrace), 
+                                                0
+                                            );
+    if (filter_set_status) {
+        if (seccomp_ctx)
+            seccomp_release(seccomp_ctx);
+        fprintf(stderr, "seccomp could not add KILL rule for 'ptrace': %m\n");
+        return EXIT_FAILURE;
+    }
+
+    filter_set_status = seccomp_rule_add(
                                                 seccomp_ctx,            // the context to which the rule applies
                                                 SCMP_FAIL,          // action to take on rule match
                                                 SCMP_SYS(move_pages),   // get the sys_call number using SCMP_SYS() macro
@@ -122,14 +135,6 @@ int setup_syscall_filters(){
         if (seccomp_ctx)
             seccomp_release(seccomp_ctx);
         fprintf(stderr, "seccomp could not add KILL rule for 'move_pages': %m\n");
-        return EXIT_FAILURE;
-    }
-
-    filter_set_status = seccomp_rule_add(seccomp_ctx, SCMP_FAIL, SCMP_SYS(ptrace), 0);
-    if (filter_set_status) {
-        if (seccomp_ctx)
-            seccomp_release(seccomp_ctx);
-        fprintf(stderr, "seccomp could not add KILL rule for 'ptrace': %m\n");
         return EXIT_FAILURE;
     }
 
